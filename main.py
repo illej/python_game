@@ -59,21 +59,28 @@ LEGEND = {'#': Wall,
 
 FPS = 30
 fpsClock = pygame.time.Clock()
-
+world = World(MAP, LEGEND)
 
 def evaluate_entity(entity):
+    result = None
     if type(entity) is Player:
-        return BLUE
+        # return Player.visual_representation
+        result = world.player.visual_representation
     elif type(entity) is Critter:
-        return RED
+        # return RED
+        result = RED
     elif type(entity) is Wall:
-        return BLACK
+        # return BLACK
+        result = BLACK
     elif entity is None:
-        return WHITE
+        # return WHITE
+        result = WHITE
+    print('> entity: {}, colour: {}'.format(entity, result))
+    return result
 
 
 def main():
-    world = World(MAP, LEGEND)
+    # world = World(MAP, LEGEND)
     print(world.to_string())
 
     print('player:', world.player)
@@ -92,6 +99,8 @@ def main():
     #         pygame.draw.rect(DISPLAY_SURFACE,
     #                          evaluate_entity(grid[y][x]),
     #                          (x * unit, y * unit, unit, unit))
+
+    MOVE_KEYS = [K_UP, K_DOWN, K_LEFT, K_RIGHT]
 
     # frame time data
     frame_start_time = time()
@@ -113,6 +122,9 @@ def main():
                 pygame.quit()
                 sys.exit()
             elif event.type == KEYDOWN:
+                #if event.key in MOVE_KEYS:
+                # world.player.handle_input(event.key)
+                # TODO: Move to Player?
                 if event.key == K_UP:
                     world.player.move_up()
                 if event.key == K_DOWN:
@@ -122,17 +134,21 @@ def main():
                 if event.key == K_RIGHT:
                     world.player.move_right()
 
-        pygame.display.update()
-        fpsClock.tick(FPS)
-
         frame_end_time = time()
         delta_time = frame_end_time - frame_start_time
+
+        world.player.update(delta_time)
+
+        frame_start_time = frame_end_time
+
+        pygame.display.update()
+        fpsClock.tick(FPS)
 
         print('> f_start: {}'.format(frame_start_time))
         print('> f_end: {}'.format(frame_end_time))
         print('> delta: {}'.format(delta_time))
 
-        frame_start_time = frame_end_time
+
 
 
 

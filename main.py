@@ -75,7 +75,7 @@ def evaluate_entity(entity):
     elif entity is None:
         # return WHITE
         result = WHITE
-    print('> entity: {}, colour: {}'.format(entity, result))
+    # print('> entity: {}, colour: {}'.format(entity, result))
     return result
 
 
@@ -122,9 +122,10 @@ def main():
                 pygame.quit()
                 sys.exit()
             elif event.type == KEYDOWN:
-                #if event.key in MOVE_KEYS:
-                # world.player.handle_input(event.key)
+                # if event.key in MOVE_KEYS:
+                #     world.player.handle_input(event.key)
                 # TODO: Move to Player?
+                world.player.handle_input(event.key)
                 if event.key == K_UP:
                     world.player.move_up()
                 if event.key == K_DOWN:
@@ -144,9 +145,9 @@ def main():
         pygame.display.update()
         fpsClock.tick(FPS)
 
-        print('> f_start: {}'.format(frame_start_time))
-        print('> f_end: {}'.format(frame_end_time))
-        print('> delta: {}'.format(delta_time))
+        # print('> f_start: {}'.format(frame_start_time))
+        # print('> f_end: {}'.format(frame_end_time))
+        # print('> delta: {}'.format(delta_time))
 
 
 

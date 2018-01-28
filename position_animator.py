@@ -3,6 +3,7 @@ from vector import Vector
 from animator import Animator
 
 
+
 class PositionAnimator(Animator):
     def __init__(self, entity):
         super().__init__(entity)

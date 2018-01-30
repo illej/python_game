@@ -60,8 +60,7 @@ class Player(Entity):
     def update(self, delta):
         self._colour_animator.animate(delta)
         # TODO: Move to PositionAnimator
-
-        # print('> direction: ', self._directions[self._facing])
+        # TODO: -> pass in [delta] and get back [positional_delta]
 
         if self._elapsed_time < self._movement_duration and self._is_moving:
             self._elapsed_time += delta

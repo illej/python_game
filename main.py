@@ -136,28 +136,29 @@ def main():
         _previous = _current
         _lag += _elapsed
 
-        print('SETUP()_previous: {}, _current: {}, _elapsed: {}, _lag: {}'.format(_previous,
-                                                                           _current,
-                                                                           _elapsed,
-                                                                           _lag))
+        # print('SETUP()_previous: {}, _current: {}, _elapsed: {}, _lag: {}'.format(_previous,
+        #                                                                    _current,
+        #                                                                    _elapsed,
+        #                                                                    _lag))
 
         # handle_input()
 
         while _lag >= _MS_PER_UPDATE:
             # update()
             _lag -= _MS_PER_UPDATE
-            print('UPDATE()_lag: {}, _MSpu: {}'.format(_lag, _MS_PER_UPDATE))
+            # print('UPDATE()_lag: {}, _MSpu: {}'.format(_lag, _MS_PER_UPDATE))
 
         # render()
-        print('RENDER()')
+        # print('RENDER()')
         # ---------------------------- #
 
-        DISPLAY_SURFACE.fill(WHITE)
+        DISPLAY_SURFACE.fill(BLACK)
 
         # Draw player as sprite
         player_image = get_image(0, 0, 76, 76, player_sheet)
         enemy_image = get_image(0, 0, 76, 76, enemy_sheet)
-        DISPLAY_SURFACE.blit(world.player.visual_representation, (world.player.x, world.player.y))
+        player = scale_image(world.player.visual_representation, UNIT_SIZE)
+        DISPLAY_SURFACE.blit(player, (world.player.x, world.player.y))
 
         for e in entities:
             if isinstance(e, Critter):

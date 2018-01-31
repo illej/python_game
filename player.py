@@ -57,18 +57,22 @@ class Player(Entity):
     def move_up(self):
         # self._y -= self._speed
         self._facing = UP
+        self._sprite_animator.set_direction(self._facing)
 
     def move_down(self):
         # self._y += self._speed
         self._facing = DOWN
+        self._sprite_animator.set_direction(self._facing)
 
     def move_left(self):
         # self._x -= self._speed
         self._facing = LEFT
+        self._sprite_animator.set_direction(self._facing)
 
     def move_right(self):
         # self._x += self._speed
         self._facing = RIGHT
+        self._sprite_animator.set_direction(self._facing)
 
     @property
     def visual_representation(self):
@@ -80,7 +84,6 @@ class Player(Entity):
         self._sprite_animator.animate(delta)
         # TODO: Move to PositionAnimator
         # TODO: -> pass in [delta] and get back [positional_delta]
-
         if self._elapsed_time < self._movement_duration and self._is_moving:
             self._elapsed_time += delta
 

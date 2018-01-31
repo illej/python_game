@@ -23,10 +23,8 @@ class SpriteAnimator(Animator):
         self._frame_index = 0
 
     def animate(self, delta):
-        print('> frame_idx: {}, current: {}'.format(self._frame_index, self._current_sprite))
         if delta < self._animation_segment_length and self._elapsed_time < self._animation_segment_length:
             self._elapsed_time += delta
-            print('> elapsed: ', self._elapsed_time)
         else:
             self._frame_index += 1
             self._elapsed_time = 0
@@ -48,7 +46,7 @@ class SpriteAnimator(Animator):
         return pygame.transform.scale(image, (width, height))
 
     def get_strip(self, x_start, y_start, x_end, y_end):
-        self._strip = self.get_image(0, 0,
+        self._strip = self.get_image(x_start, y_start,
                                      (self._frame_size * self._strip_length),
                                      self._frame_size,
                                      self._sheet)

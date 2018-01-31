@@ -3,8 +3,10 @@ import colours
 from directions import *
 from colour_animator import ColourAnimator
 from position_animator import PositionAnimator
+from sprite_animator import SpriteAnimator
 import pygame
 from pygame.locals import *
+import os
 
 
 class Player(Entity):
@@ -30,6 +32,21 @@ class Player(Entity):
                             LEFT: [-1, 0],
                             RIGHT: [1, 0]}
         self._moves = 0
+        self._sprite_animator = SpriteAnimator(self, self.load_png('sun_bro_01.png')[0])
+
+    def load_png(self, name):
+        """ Load image and return image object """
+        fullname = os.path.join('data', name)
+        try:
+            image = pygame.image.load(fullname)
+            if image.get_alpha() is None:
+                image = image.convert()
+            else:
+                image = image.convert_alpha()
+        except pygame.error as e:
+            print('Cannot load image:', fullname)
+            raise SystemExit(e)
+        return image, image.get_rect()
 
     def handle_input(self, user_input):
         # TODO: stuff about states
@@ -55,10 +72,12 @@ class Player(Entity):
 
     @property
     def visual_representation(self):
-        return self._colour_animator.current_colour
+        # return self._colour_animator.current_colour
+        return self._sprite_animator.current_sprite
 
     def update(self, delta):
-        self._colour_animator.animate(delta)
+        # self._colour_animator.animate(delta)
+        self._sprite_animator.animate(delta)
         # TODO: Move to PositionAnimator
         # TODO: -> pass in [delta] and get back [positional_delta]
 

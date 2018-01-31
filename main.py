@@ -44,11 +44,16 @@ MAP = ["#####",
 LEGEND = {'#': Wall,
           'p': Player,
           'c': Critter}
+UNIT = 50
+UNIT_SIZE = (UNIT, UNIT)
 
 FPS = 30
 fpsClock = pygame.time.Clock()
 world = World(MAP, LEGEND)
 
+
+def scale_image(image, size):
+    return pygame.transform.scale(image, (size[0], size[1]))
 
 def load_png(name):
     """ Load image and return image object """
@@ -152,11 +157,12 @@ def main():
         # Draw player as sprite
         player_image = get_image(0, 0, 76, 76, player_sheet)
         enemy_image = get_image(0, 0, 76, 76, enemy_sheet)
-        DISPLAY_SURFACE.blit(player_image, (world.player.x, world.player.y))
+        DISPLAY_SURFACE.blit(world.player.visual_representation, (world.player.x, world.player.y))
 
         for e in entities:
             if isinstance(e, Critter):
-                DISPLAY_SURFACE.blit(enemy_image, (e.x, e.y))
+                enemy = scale_image(enemy_image, UNIT_SIZE)
+                DISPLAY_SURFACE.blit(enemy, (e.x, e.y))
 
         # Draws map as coloured squares
         # for i in range(len(entities)):

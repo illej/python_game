@@ -6,6 +6,7 @@ class Entity(metaclass=ABCMeta):
         self._x = vector.x
         self._y = vector.y
         self._origin_char = None
+        self._visual_representation = None
 
     @property
     def x(self):
@@ -22,3 +23,7 @@ class Entity(metaclass=ABCMeta):
     @origin_char.setter
     def origin_char(self, char):
         self._origin_char = char
+
+    @property
+    def visual_representation(self):
+        return self._visual_representation

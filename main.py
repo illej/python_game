@@ -16,6 +16,7 @@ try:
     from player import Player
     from critter import Critter
     from wall import Wall
+    from entity import Entity
 except ImportError as e:
     print('Could not load module. {}'.format(e))
     sys.exit(2)
@@ -160,10 +161,18 @@ def main():
         player = scale_image(world.player.visual_representation, UNIT_SIZE)
         DISPLAY_SURFACE.blit(player, (world.player.x, world.player.y))
 
+        # draw enemies
         for e in entities:
             if isinstance(e, Critter):
                 enemy = scale_image(enemy_image, UNIT_SIZE)
                 DISPLAY_SURFACE.blit(enemy, (e.x, e.y))
+
+        # draw ALL entities
+        for e in entities:  # TODO: change 'entities = world.get_entities()' to 'world.entities'
+            if isinstance(e, Entity):
+                e_img = scale_image(e.visual_representation, UNIT_SIZE)
+                DISPLAY_SURFACE.blit(e_img, (e.x, e.y))
+
 
         # Draws map as coloured squares
         # for i in range(len(entities)):

@@ -77,7 +77,7 @@ class Player(Entity):
     @property
     def visual_representation(self):
         # return self._colour_animator.current_colour
-        return self._sprite_animator.current_sprite
+        return self._visual_representation  # self._sprite_animator.current_sprite
 
     def update(self, delta):
         # self._colour_animator.animate(delta)
@@ -98,4 +98,5 @@ class Player(Entity):
             self._elapsed_time = 0
             self._is_moving = False
             self._moves = 0
+        self._visual_representation = self._sprite_animator.current_sprite
 

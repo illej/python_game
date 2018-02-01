@@ -58,6 +58,7 @@ class SpriteAnimator(Animator):
         return surface
 
     def set_direction(self, direction):
+        # TODO: Temporary
         if direction == UP:
             self.get_strip(0 * self._frame_size, 5 * self._frame_size,
                            6 * self._frame_size, self._frame_size)

@@ -52,7 +52,6 @@ class Player(Entity):
         # TODO: stuff about states
         if self._is_moving is False:
             self._is_moving = True
-        print('> input: {}, is_moving: {}'.format(user_input, self._is_moving))
 
     def move_up(self):
         # self._y -= self._speed
@@ -77,6 +76,7 @@ class Player(Entity):
     @property
     def visual_representation(self):
         # return self._colour_animator.current_colour
+        self._visual_representation = self._sprite_animator.current_sprite
         return self._visual_representation  # self._sprite_animator.current_sprite
 
     def update(self, delta):

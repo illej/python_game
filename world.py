@@ -14,6 +14,10 @@ class World(object):
         self._populate_grid()
         self.player = self._get_player()
 
+    def update(self):
+        # TODO: for e in self._entities: e.update(delta) ?
+        pass
+
     def _load(self):
         width = len(self._map)
         height = len(self._map[0])

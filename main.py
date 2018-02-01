@@ -23,11 +23,14 @@ except ImportError as e:
 
 pygame.init()
 
+WINDOW_WIDTH = 1024
+WINDOW_HEIGHT = 768
+WINDOW_HORIZONTAL_CENTRE = WINDOW_WIDTH / 2
+WINDOW_VERTICAL_CENTRE = WINDOW_HEIGHT / 2
 
+WINDOW_BACKGROUND_COLOUR = (0, 0, 0)  # black
 
-
-
-DISPLAY_SURFACE = pygame.display.set_mode((500, 400), 0, 32)
+DISPLAY_SURFACE = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), 0, 32)
 pygame.display.set_caption('zelda_souls_v1')
 
 BLACK = (0, 0, 0)
@@ -52,9 +55,22 @@ FPS = 30
 fpsClock = pygame.time.Clock()
 world = World(MAP, LEGEND)
 
+grid = world.get_grid()
+w = len(grid[0])
+h = len(grid)
+MAP_WIDTH = w * UNIT
+MAP_HEIGHT = h * UNIT
+MAP_HORIZONTAL_CENTRE = MAP_WIDTH / 2
+MAP_VERTICAL_CENTRE = MAP_HEIGHT / 2
+
+
+MAP_X_START = WINDOW_HORIZONTAL_CENTRE - MAP_HORIZONTAL_CENTRE
+MAP_Y_START = WINDOW_VERTICAL_CENTRE - MAP_VERTICAL_CENTRE
+
 
 def scale_image(image, size):
     return pygame.transform.scale(image, (size[0], size[1]))
+
 
 def load_png(name):
     """ Load image and return image object """
@@ -80,53 +96,34 @@ def get_image(pos_x, pos_y, width, height, sprite_sheet):
 
 def evaluate_entity(entity):
     result = None
-    if type(entity) is Player:
-        # return Player.visual_representation
-        result = world.player.visual_representation
-    elif type(entity) is Critter:
-        # return RED
+    if isinstance(entity, Player):
+        result = BLUE  # world.player.visual_representation
+    elif isinstance(entity, Critter):
         result = RED
-    elif type(entity) is Wall:
-        # return BLACK
-        result = BLACK
-    elif entity is None:
-        # return WHITE
+    elif isinstance(entity, Wall):
         result = WHITE
-    # print('> entity: {}, colour: {}'.format(entity, result))
+    elif entity is None:
+        result = WHITE
     return result
 
 
 def main():
-    # world = World(MAP, LEGEND)
+    # --- WEIRD SETUP THING --- #
     print(world.to_string())
-
     print('player:', world.player)
     print('player_pos:', "{}, {}".format(world.player.x, world.player.y))
 
     entities = world.get_entities()
     print('entities:', entities)
 
-    grid = world.get_grid()
-    h = len(grid)
-    w = len(grid[0])
-    unit = 50
-
-    # Draw player as sprite
+    # --- Draw player as sprite --- # TODO: Result sent to player/enemy constructor
     player_sheet, player_sheet_rect = load_png('sun_bro_01.png')
     enemy_sheet, enemy_sheet_rect = load_png('link_02.png')
-
-    # for y in range(h):
-    #     for x in range(w):
-    #         pygame.draw.rect(DISPLAY_SURFACE,
-    #                          evaluate_entity(grid[y][x]),
-    #                          (x * unit, y * unit, unit, unit))
-
-    MOVE_KEYS = [K_UP, K_DOWN, K_LEFT, K_RIGHT]
 
     # frame time data
     frame_start_time = time()
 
-    # ---------------------------- #
+    # --- Fixed time step, variable render  --- #
     _MS_PER_UPDATE = 0.01  # faster than 60fps (16ms~)
     _previous = time()
     _lag = 0.0
@@ -137,59 +134,23 @@ def main():
         _previous = _current
         _lag += _elapsed
 
-        # print('SETUP()_previous: {}, _current: {}, _elapsed: {}, _lag: {}'.format(_previous,
-        #                                                                    _current,
-        #                                                                    _elapsed,
-        #                                                                    _lag))
-
         # handle_input()
 
         while _lag >= _MS_PER_UPDATE:
             # update()
             _lag -= _MS_PER_UPDATE
-            # print('UPDATE()_lag: {}, _MSpu: {}'.format(_lag, _MS_PER_UPDATE))
 
         # render()
-        # print('RENDER()')
         # ---------------------------- #
 
-        DISPLAY_SURFACE.fill(BLACK)
-
-        # Draw player as sprite
-        player_image = get_image(0, 0, 76, 76, player_sheet)
-        enemy_image = get_image(0, 0, 76, 76, enemy_sheet)
-        player = scale_image(world.player.visual_representation, UNIT_SIZE)
-        DISPLAY_SURFACE.blit(player, (world.player.x, world.player.y))
-
-        # draw enemies
-        for e in entities:
-            if isinstance(e, Critter):
-                enemy = scale_image(enemy_image, UNIT_SIZE)
-                DISPLAY_SURFACE.blit(enemy, (e.x, e.y))
-
-        # draw ALL entities
-        for e in entities:  # TODO: change 'entities = world.get_entities()' to 'world.entities'
-            if isinstance(e, Entity):
-                e_img = scale_image(e.visual_representation, UNIT_SIZE)
-                DISPLAY_SURFACE.blit(e_img, (e.x, e.y))
-
-
-        # Draws map as coloured squares
-        # for i in range(len(entities)):
-        #     e = entities[i]
-        #     if e is not None:
-        #         pygame.draw.rect(DISPLAY_SURFACE,
-        #                          evaluate_entity(e),
-        #                          (e.x, e.y, unit, unit))
-
+        # --- Handle input --- #
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
             elif event.type == KEYDOWN:
-                # if event.key in MOVE_KEYS:
-                #     world.player.handle_input(event.key)
                 # TODO: Move to Player?
+                # TODO: Send input data to Player as Commands(stick_data)
                 world.player.handle_input(event.key)
                 if event.key == K_UP:
                     world.player.move_up()
@@ -200,9 +161,31 @@ def main():
                 if event.key == K_RIGHT:
                     world.player.move_right()
 
+        # --- UPDATE --- #
+        world.update()
+
+        # --- RENDER --- #
+        DISPLAY_SURFACE.fill(WINDOW_BACKGROUND_COLOUR)
+
+        # Draw as sprites
+        player_image = get_image(0, 0, 76, 76, player_sheet)
+        enemy_image = get_image(0, 0, 80, 80, enemy_sheet)
+        player = scale_image(world.player.visual_representation, UNIT_SIZE)
+        DISPLAY_SURFACE.blit(player, (world.player.x, world.player.y))
+
+        # Draw ENTITIES as coloured squares
+        for i in range(len(entities)):
+            e = entities[i]
+            if e is not None:
+                pygame.draw.rect(DISPLAY_SURFACE,
+                                 evaluate_entity(e),
+                                 (MAP_X_START + e.x, MAP_Y_START + e.y, UNIT, UNIT))
+
+        # --- End of frame --- #
+        # TODO: Decide whether to use custom game loop or pygame loop
         frame_end_time = time()
         delta_time = frame_end_time - frame_start_time
-        world.player.update(delta_time)
+        world.player.update(delta_time)  # -> UPDATE
         frame_start_time = frame_end_time
 
         pygame.display.update()

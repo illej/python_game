@@ -170,7 +170,7 @@ def main():
         # Draw as sprites
         player_image = get_image(0, 0, 76, 76, player_sheet)
         enemy_image = get_image(0, 0, 80, 80, enemy_sheet)
-        player = scale_image(world.player.visual_representation, UNIT_SIZE)
+        player = scale_image(world.player.image, UNIT_SIZE)
         DISPLAY_SURFACE.blit(player, (world.player.x, world.player.y))
 
         # Draw ENTITIES as coloured squares

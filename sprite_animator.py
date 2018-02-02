@@ -12,30 +12,35 @@ class SpriteAnimator(Animator):
         self._sheet = sheet
         self._strip = None
         self._strip_length = 9
-        self._frame_size = 80
+        self._frame_size = 16  # 80
         self._colour_key = (0, 0, 0)  # black
         self._current_sprite = self.get_image(0, 0, self._frame_size, self._frame_size, self._sheet)
         self._state = IDLE_STATE
-        self._animation_segments = 8
-        self._animation_segment_length = 0.05  # seconds
+        self._animation_segments = 4  # 8
+        self._animation_segment_length = 0.15  # seconds
+        self._variable_segment_lengths = {0: 0.05,
+                                          1: 0.15,
+                                          2: 0.05,
+                                          3: 0.15}
         self._total_animation_duration = self._animation_segments * self._animation_segment_length
         self._elapsed_time = 0
         self._frame_index = 0
 
     def animate(self, delta):
-        if delta < self._animation_segment_length and self._elapsed_time < self._animation_segment_length:
+        print('> frame_idx: {}'.format(self._frame_index))
+        # if delta < self._animation_segment_length and self._elapsed_time < self._animation_segment_length:
+        if delta < self._variable_segment_lengths[self._frame_index] and self._elapsed_time < self._variable_segment_lengths[self._frame_index]:
             self._elapsed_time += delta
         else:
             self._frame_index += 1
+            if self._frame_index >= self._animation_segments:
+                self._frame_index = 0
             self._elapsed_time = 0
             self._current_sprite = self.get_image(self._frame_index * self._frame_size,
                                                   0,
                                                   self._frame_size,
                                                   self._frame_size,
                                                   self._sheet)
-            if self._frame_index >= self._animation_segments:
-                self._frame_index = 0
-
 
     @property
     def current_sprite(self):

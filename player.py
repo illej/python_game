@@ -32,7 +32,8 @@ class Player(Entity):
                             LEFT: [-1, 0],
                             RIGHT: [1, 0]}
         self._moves = 0
-        self._sprite_animator = SpriteAnimator(self, self.load_png('sun_bro_01.png')[0])
+        self._sprite_animator = SpriteAnimator(self, self.load_png('dude_16_run_v3.png')[0])  # 'sun_bro_01.png')[0])
+        self._image = None
 
     def load_png(self, name):
         """ Load image and return image object """
@@ -74,10 +75,10 @@ class Player(Entity):
         self._sprite_animator.set_direction(self._facing)
 
     @property
-    def visual_representation(self):
+    def image(self):
         # return self._colour_animator.current_colour
-        self._visual_representation = self._sprite_animator.current_sprite
-        return self._visual_representation  # self._sprite_animator.current_sprite
+        self._image = self._sprite_animator.current_sprite
+        return self._image  # self._sprite_animator.current_sprite
 
     def update(self, delta):
         # self._colour_animator.animate(delta)
@@ -98,5 +99,5 @@ class Player(Entity):
             self._elapsed_time = 0
             self._is_moving = False
             self._moves = 0
-        self._visual_representation = self._sprite_animator.current_sprite
+        self._image = self._sprite_animator.current_sprite
 

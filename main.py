@@ -17,6 +17,7 @@ try:
     from critter import Critter
     from wall import Wall
     from entity import Entity
+    import xbox360_controller
 except ImportError as e:
     print('Could not load module. {}'.format(e))
     sys.exit(2)
@@ -108,6 +109,8 @@ def evaluate_entity(entity):
 
 
 def main():
+    controller = xbox360_controller.Controller(0)
+
     # --- WEIRD SETUP THING --- #
     print(world.to_string())
     print('player:', world.player)

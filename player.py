@@ -10,9 +10,13 @@ import os
 
 
 class Player(Entity):
-    def __init__(self, vector):
+    def __init__(self, vector, input, physics, graphics):
         super().__init__(vector)
+        self._input = input
+        self._physics = physics
+        self._graphics = graphics
         self._speed = 50
+        self._velocity = 0  # ???
         self._colours = {0: colours.BLUE,
                          1: colours.GREEN,
                          2: colours.RED}
@@ -81,6 +85,11 @@ class Player(Entity):
         return self._image  # self._sprite_animator.current_sprite
 
     def update(self, delta):
+        # new
+        self._input.update(self)
+        # self._physics.update(self)
+        # self._graphics.update(self)
+
         # self._colour_animator.animate(delta)
         self._sprite_animator.animate(delta)
         # TODO: Move to PositionAnimator
@@ -100,4 +109,6 @@ class Player(Entity):
             self._is_moving = False
             self._moves = 0
         self._image = self._sprite_animator.current_sprite
+
+
 

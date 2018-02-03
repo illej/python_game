@@ -15,6 +15,14 @@ class Entity(metaclass=ABCMeta):
     def y(self):
         return self._y
 
+    @x.setter
+    def x(self, x):
+        self._x = x
+
+    @y.setter
+    def y(self, y):
+        self._y = y
+
     @property
     def origin_char(self):
         return self._origin_char

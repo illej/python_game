@@ -73,9 +73,9 @@ class World(object):
             return None
         elif character is 'p':
             element = legend[character](vector,
-                                     InputComponent(xbox360_controller.Controller(0)),
-                                     PhysicsComponent(),
-                                     GraphicsComponent())
+                                        InputComponent(xbox360_controller.Controller(0)),
+                                        PhysicsComponent(),
+                                        GraphicsComponent())
             element.origin_char = character
             return element
         element = legend[character](vector)

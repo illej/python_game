@@ -109,8 +109,6 @@ def evaluate_entity(entity):
 
 
 def main():
-    controller = xbox360_controller.Controller(0)
-
     # --- WEIRD SETUP THING --- #
     print(world.to_string())
     print('player:', world.player)

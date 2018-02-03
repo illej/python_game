@@ -8,3 +8,7 @@ class InputComponent(object):
 
         actor.x += int(left_x * 5)
         actor.y += int(left_y * 5)
+
+        buttons = self._controller.get_buttons()
+
+        # do stuff with buttons

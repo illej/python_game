@@ -110,5 +110,6 @@ class Player(Entity):
             self._moves = 0
         self._image = self._sprite_animator.current_sprite
 
-
+    def log_input(self):
+        self._input.show_replay_data()
 

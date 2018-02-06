@@ -6,6 +6,10 @@ IDLE_STATE = 'idle_state'
 RUNNING_STATE = 'running_state'
 
 
+# TODO: Change this to be the client of the sprite_strip_animator. Change name to SpriteManager?
+# It talks to the sprite_strip_animator, passing in the strip based on the player('entity') state.
+# _current_sprite => strip[n].next().
+# animate() has overlap with the .iter() method. Merge?
 class SpriteAnimator(Animator):
     def __init__(self, entity, sheet):
         super().__init__(entity)

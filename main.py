@@ -161,6 +161,10 @@ def main():
                     world.player.move_left()
                 if event.key == K_RIGHT:
                     world.player.move_right()
+            elif event.type == pygame.JOYBUTTONDOWN:
+                # handle events for all controllers
+                if event.button == xbox360_controller.START:
+                    world.player.log_input()
 
         # --- UPDATE --- #
         world.update()

@@ -16,6 +16,21 @@ class InputComponent(object):
         actor.x += int(left_x * 5)
         actor.y += int(left_y * 5)
 
+        abs_x = abs(left_x)
+        abs_y = abs(left_y)
+        abs_diff = abs(abs_x - abs_y)
+
+        if abs_x > abs_y:
+            if left_x > 0:
+                actor.move_right()
+            else:
+                actor.move_left()
+        else:
+            if left_y > 0:
+                actor.move_down()
+            else:
+                actor.move_up()
+
         # self._replay.left_stick_x.append(left_x)
         # self._replay.left_stick_y.append(left_y)
 

@@ -1,6 +1,7 @@
 from animator import Animator
 import pygame
 from directions import *
+from sprite_strip_animator import SpriteStripAnimator
 
 IDLE_STATE = 'idle_state'
 RUNNING_STATE = 'running_state'
@@ -29,25 +30,37 @@ class SpriteAnimator(Animator):
         self._total_animation_duration = self._animation_segments * self._animation_segment_length
         self._elapsed_time = 0
         self._frame_index = 0
+        # NEW
+        self._frames = 2
+        self._n = 1
+        self._strips = [
+            SpriteStripAnimator('hyper_light_drifter.png', (0, 0, 32, 32), 12, 1, True, self._frames),
+            SpriteStripAnimator('hyper_light_drifter.png', (0, 32, 32, 32), 12, 1, True, self._frames),
+            SpriteStripAnimator('hyper_light_drifter.png', (0, 64, 32, 32), 12, 1, True, self._frames),
+            SpriteStripAnimator('hyper_light_drifter.png', (0, 96, 32, 32), 12, 1, True, self._frames)
+        ]
+        self._strips[self._n].iter()
 
     def animate(self, delta):
-        print('> frame_idx: {}'.format(self._frame_index))
+        self._current_sprite = self._strips[self._n].next()
+        # print('> frame_idx: {}'.format(self._frame_index))
         # if delta < self._animation_segment_length and self._elapsed_time < self._animation_segment_length:
-        if delta < self._variable_segment_lengths[self._frame_index] and self._elapsed_time < self._variable_segment_lengths[self._frame_index]:
-            self._elapsed_time += delta
-        else:
-            self._frame_index += 1
-            if self._frame_index >= self._animation_segments:
-                self._frame_index = 0
-            self._elapsed_time = 0
-            self._current_sprite = self.get_image(self._frame_index * self._frame_size,
-                                                  0,
-                                                  self._frame_size,
-                                                  self._frame_size,
-                                                  self._sheet)
+        # if delta < self._variable_segment_lengths[self._frame_index] and self._elapsed_time < self._variable_segment_lengths[self._frame_index]:
+        #     self._elapsed_time += delta
+        # else:
+        #     self._frame_index += 1
+        #     if self._frame_index >= self._animation_segments:
+        #         self._frame_index = 0
+        #     self._elapsed_time = 0
+        #     self._current_sprite = self.get_image(self._frame_index * self._frame_size,
+        #                                           0,
+        #                                           self._frame_size,
+        #                                           self._frame_size,
+        #                                           self._sheet)
 
     @property
     def current_sprite(self):
+        # self._current_sprite = self._strips[self._n].next()
         return self._current_sprite
 
     # TODO: move to 'main.py'
@@ -69,14 +82,22 @@ class SpriteAnimator(Animator):
     def set_direction(self, direction):
         # TODO: Temporary
         if direction == UP:
-            self.get_strip(0 * self._frame_size, 5 * self._frame_size,
-                           6 * self._frame_size, self._frame_size)
+            # self.get_strip(0 * self._frame_size, 5 * self._frame_size,
+            #                6 * self._frame_size, self._frame_size)
+            self._n = 0
+            # self._strips[self._n].iter()
         if direction == DOWN:
-            self.get_strip(6 * self._frame_size, 5 * self._frame_size,
-                           12 * self._frame_size, self._frame_size)
+            # self.get_strip(6 * self._frame_size, 5 * self._frame_size,
+            #                12 * self._frame_size, self._frame_size)
+            self._n = 1
+            # self._strips[self._n].iter()
         if direction == LEFT:
-            self.get_strip(6 * self._frame_size, 0 * self._frame_size,
-                           9 * self._frame_size, self._frame_size)
+            # self.get_strip(6 * self._frame_size, 0 * self._frame_size,
+            #                9 * self._frame_size, self._frame_size)
+            self._n = 2
+            # self._strips[self._n].iter()
         if direction == RIGHT:
-            self.get_strip(0 * self._frame_size, 0 * self._frame_size,
-                           9 * self._frame_size, self._frame_size)
+            # self.get_strip(0 * self._frame_size, 0 * self._frame_size,
+            #                9 * self._frame_size, self._frame_size)
+            self._n = 3
+            # self._strips[self._n].iter()

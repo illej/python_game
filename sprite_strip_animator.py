@@ -1,4 +1,4 @@
-import sprite_sheet
+from sprite_sheet import SpriteSheet
 
 
 class SpriteStripAnimator(object):
@@ -10,10 +10,10 @@ class SpriteStripAnimator(object):
     """
 
     def __init__(self, filename, rect, count, colorkey=None, loop=False, frames=1):
-        """construct a SpriteStripAnim
+        """construct a SpriteStripAnimator
 
         filename, rect, count, and colorkey are the same arguments used
-        by spritesheet.load_strip.
+        by sprite_sheet.load_strip.
 
         loop is a boolean that, when True, causes the next() method to
         loop. If False, the terminal case raises StopIteration.
@@ -22,8 +22,8 @@ class SpriteStripAnimator(object):
         the iterator advances to the next image.
         """
         self.filename = filename
-        ss = sprite_sheet.SpriteSheet(filename)
-        self.images = ss.load_strip(rect, count, colorkey)
+        # sprite_sheet = SpriteSheet(filename)
+        self.images = SpriteSheet(filename).load_strip(rect, count, colorkey) # sprite_sheet.load_strip(rect, count, colorkey)
         self.i = 0
         self.loop = loop
         self.frames = frames
@@ -35,6 +35,7 @@ class SpriteStripAnimator(object):
         return self
 
     def next(self):
+        # TODO: Replace 'self.frames' with 'delta' for variable image length.
         if self.i >= len(self.images):
             if not self.loop:
                 raise StopIteration
@@ -47,6 +48,6 @@ class SpriteStripAnimator(object):
             self.f = self.frames
         return image
 
-    def __add__(self, ss):
-        self.images.extend(ss.images)
+    def __add__(self, sprite_sheet):
+        self.images.extend(sprite_sheet.images)
         return self

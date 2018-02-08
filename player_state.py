@@ -13,17 +13,27 @@ class PlayerState(metaclass=ABCMeta):
     def update(self, actor):
         raise NotImplementedError
 
+    @abstractmethod
+    def enter(self, actor):
+        raise NotImplementedError
+
 
 class IdleState(PlayerState):
     def __init__(self):
         super().__init__()
 
     def handle_input(self, actor, input):
-        if input == 'pressed_b':
-            actor._player_state = JumpingState()
+        if input == 'press_b':
+            return JumpingState()
+        elif input == 'press_down':
+            return DuckingState()
+        return None
 
     def update(self, actor):
         pass
+
+    def enter(self, actor):
+        actor.set_grap
 
 
 class DuckingState(PlayerState):
@@ -43,6 +53,18 @@ class DuckingState(PlayerState):
 
 
 class JumpingState(PlayerState):
+    def __init__(self):
+        super().__init__()
+
+    def handle_input(self, actor, input):
+        if input == 'button_r1':
+            return AttackState()
+
+    def update(self, actor):
+        pass
+
+
+class AttackState(PlayerState):
     def __init__(self):
         super().__init__()
 

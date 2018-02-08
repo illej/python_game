@@ -33,7 +33,23 @@ class IdleState(PlayerState):
         pass
 
     def enter(self, actor):
-        actor.set_grap
+        actor.set_graphics('idle_sprite.png')
+
+
+class ActionState(PlayerState):
+    def __init__(self):
+        super().__init__()
+        self._action_duration = 0
+        self._elapsed_time = 0
+
+    def enter(self, actor):
+        actor.set_graphics('action_sprite.png')
+
+    def handle_input(self, actor, input):
+        pass
+
+    def update(self, actor):
+        pass
 
 
 class DuckingState(PlayerState):
@@ -44,7 +60,7 @@ class DuckingState(PlayerState):
 
     def handle_input(self, actor, input):
         if input == 'release_down':
-            actor.change_sprite('img_stand')
+            return IdleState()
 
     def update(self, actor):
         self._charge_time += 1

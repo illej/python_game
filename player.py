@@ -1,6 +1,6 @@
 from entity import Entity
 import colours
-from directions import *
+from directions import Directions
 from colour_animator import ColourAnimator
 from position_animator import PositionAnimator
 from sprite_animator import SpriteAnimator
@@ -18,28 +18,24 @@ class Player(Entity):
         self._graphics = graphics
         self._speed = 50
         self._velocity = 0  # ???
-        self._colours = {0: colours.BLUE,
-                         1: colours.GREEN,
-                         2: colours.RED}
-        self._moves = {UP: self.move_up,
-                       DOWN: self.move_down,
-                       LEFT: self.move_left,
-                       RIGHT: self.move_right}
-        self._facing = DOWN
-        self._colour_animator = ColourAnimator(self._colours)
+        self._moves = {Directions.UP: self.move_up,
+                       Directions.DOWN: self.move_down,
+                       Directions.LEFT: self.move_left,
+                       Directions.RIGHT: self.move_right}
+        self._direction = Directions.DOWN
         self._position_animator = PositionAnimator(self)
         self._movement_duration = 0.5  # seconds
         self._movement_distance = 1 * 50  # units
         self._elapsed_time = 0
         self._is_moving = False
-        self._directions = {UP: [0, -1],
-                            DOWN: [0, 1],
-                            LEFT: [-1, 0],
-                            RIGHT: [1, 0]}
         self._moves = 0
         self._sprite_animator = SpriteAnimator(self, self.load_png('dude_16_run_v3.png')[0])  # 'sun_bro_01.png')[0])
         self._image = None
         self._player_state = IdleState()
+
+    def set_direction(self, direction):
+        self._direction = direction
+        self._sprite_animator.set_direction(direction)
 
     def load_png(self, name):
         # TODO: Move out of this class?
@@ -57,35 +53,13 @@ class Player(Entity):
         return image, image.get_rect()
 
     def handle_input(self, user_input):
-        # TODO: stuff about states
         if self._is_moving is False:
             self._is_moving = True
 
         state = self._player_state.handle_input(self, user_input)
         if state:
             self._player_state = state
-
-
-
-    def move_up(self):
-        # self._y -= self._speed
-        self._facing = UP
-        self._sprite_animator.set_direction(self._facing)
-
-    def move_down(self):
-        # self._y += self._speed
-        self._facing = DOWN
-        self._sprite_animator.set_direction(self._facing)
-
-    def move_left(self):
-        # self._x -= self._speed
-        self._facing = LEFT
-        self._sprite_animator.set_direction(self._facing)
-
-    def move_right(self):
-        # self._x += self._speed
-        self._facing = RIGHT
-        self._sprite_animator.set_direction(self._facing)
+            self._player_state.enter(self)
 
     @property
     def image(self):

@@ -1,4 +1,5 @@
 from replay import Replay
+from directions import Directions
 
 
 class InputComponent(object):
@@ -7,7 +8,6 @@ class InputComponent(object):
     # TODO: return input state to the player? Pass in 'entity' for callback? Use 'Command' pattern?
     def __init__(self, controller):
         self._controller = controller
-        self._walk_acceleration = 1  # unused
         self._replay = Replay()
 
     def update(self, actor):
@@ -22,19 +22,21 @@ class InputComponent(object):
 
         if abs_x > abs_y:
             if left_x > 0:
-                actor.move_right()
+                actor.set_direction(Directions.RIGHT)
             else:
-                actor.move_left()
+                actor.set_direction(Directions.LEFT)
         else:
             if left_y > 0:
-                actor.move_down()
+                actor.set_direction(Directions.DOWN)
             else:
-                actor.move_up()
+                actor.set_direction(Directions.UP)
 
         # self._replay.left_stick_x.append(left_x)
         # self._replay.left_stick_y.append(left_y)
 
         buttons = self._controller.get_buttons()
+
+        # use state to evaluate individual button presses
 
         # self._replay.buttons.append(buttons)
 

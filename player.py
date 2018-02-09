@@ -18,10 +18,6 @@ class Player(Entity):
         self._graphics = graphics
         self._speed = 50
         self._velocity = 0  # ???
-        self._moves = {Directions.UP: self.move_up,
-                       Directions.DOWN: self.move_down,
-                       Directions.LEFT: self.move_left,
-                       Directions.RIGHT: self.move_right}
         self._direction = Directions.DOWN
         self._position_animator = PositionAnimator(self)
         self._movement_duration = 0.5  # seconds
@@ -36,6 +32,9 @@ class Player(Entity):
     def set_direction(self, direction):
         self._direction = direction
         self._sprite_animator.set_direction(direction)
+
+    def set_graphic(self, animator):
+        self._sprite_animator.set_animator(animator)
 
     def load_png(self, name):
         # TODO: Move out of this class?
@@ -63,9 +62,8 @@ class Player(Entity):
 
     @property
     def image(self):
-        # return self._colour_animator.current_colour
         self._image = self._sprite_animator.current_sprite
-        return self._image  # self._sprite_animator.current_sprite
+        return self._image
 
     def update(self, delta):
         # --- State Pattern --- #

@@ -37,6 +37,7 @@ class InputComponent(object):
         buttons = self._controller.get_buttons()
 
         # use state to evaluate individual button presses
+        actor.handle_input(buttons)
 
         # self._replay.buttons.append(buttons)
 

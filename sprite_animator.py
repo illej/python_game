@@ -1,6 +1,6 @@
 from animator import Animator
 import pygame
-from directions import *
+from directions import Directions
 from sprite_strip_animator import SpriteStripAnimator
 
 IDLE_STATE = 'idle_state'
@@ -34,6 +34,7 @@ class SpriteAnimator(Animator):
         # NEW
         self._frames = 2
         self._n = 1
+        self._strip_animator = None
         self._strips = [
             SpriteStripAnimator('hyper_light_drifter.png', (0, 0, 32, 32), 12, 1, True, self._frames),
             SpriteStripAnimator('hyper_light_drifter.png', (0, 32, 32, 32), 12, 1, True, self._frames),
@@ -60,15 +61,21 @@ class SpriteAnimator(Animator):
 
     @property
     def current_sprite(self):
+        if self._current_sprite is None:
+            self._current_sprite = self._strips[self._n].next()
         return self._current_sprite
 
     def set_direction(self, direction):
         # TODO: Temporary
-        if direction == UP:
+        if direction == Directions.UP:
             self._n = 0
-        if direction == DOWN:
+        if direction == Directions.DOWN:
             self._n = 1
-        if direction == LEFT:
+        if direction == Directions.LEFT:
             self._n = 2
-        if direction == RIGHT:
+        if direction == Directions.RIGHT:
             self._n = 3
+
+    def set_animator(self, animator):
+        self._strip_animator = animator
+        self._strip_animator.iter()

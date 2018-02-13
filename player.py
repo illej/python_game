@@ -7,7 +7,9 @@ from sprite_animator import SpriteAnimator
 import pygame
 from pygame.locals import *
 import os
-from player_state import PlayerState, DuckingState, IdleState
+from player_state import PlayerState, IdleState, AttackState
+from sprite_strip_animator import SpriteStripAnimator
+from hitbox import HitBox
 
 
 class Player(Entity):
@@ -16,74 +18,93 @@ class Player(Entity):
         self._input = input
         self._physics = physics
         self._graphics = graphics
-        self._speed = 50
-        self._velocity = 0  # ???
         self._direction = Directions.DOWN
         self._position_animator = PositionAnimator(self)
         self._movement_duration = 0.5  # seconds
         self._movement_distance = 1 * 50  # units
         self._elapsed_time = 0
         self._is_moving = False
-        self._moves = 0
-        self._sprite_animator = SpriteAnimator(self, self.load_png('dude_16_run_v3.png')[0])  # 'sun_bro_01.png')[0])
-        self._image = None
-        self._player_state = IdleState()
+        self._attacking = False
+        self._state = IdleState()
+        self._idle_sprites = [
+            SpriteStripAnimator('dude_16_run_v3.png', (0, 0, 16, 16), 4, 1, True, 10)
+        ]
+        self._move_sprites = [
+            # file, rect, image_count, colour_key, is_looping, frame_duration
+            SpriteStripAnimator('hyper_light_drifter.png', (0, 0, 32, 32), 12, 1, True, 2),
+            SpriteStripAnimator('hyper_light_drifter.png', (0, 32, 32, 32), 12, 1, True, 2),
+            SpriteStripAnimator('hyper_light_drifter.png', (0, 64, 32, 32), 12, 1, True, 2),
+            SpriteStripAnimator('hyper_light_drifter.png', (0, 96, 32, 32), 12, 1, True, 2)
+        ]
+        self._attack_sprites = [
+            SpriteStripAnimator('link_02.png', (0, 0, 80, 80), 10, 1, True, 10)
+        ]
+        self._attack_sprites_2 = {
+            Directions.UP: SpriteStripAnimator('link_02.png', (0, 780, 120, 130), 10, 1, True, 2),
+            Directions.DOWN: SpriteStripAnimator('link_02.png', (0, 520, 120, 130), 10, 1, True, 2),
+            Directions.LEFT: SpriteStripAnimator('link_02.png', (0, 650, 120, 130), 10, 1, True, 2),
+            Directions.RIGHT: SpriteStripAnimator('link_02.png', (0, 910, 120, 130), 10, 1, True, 2)
+        }
+        self._dodge_sprites = [
+            SpriteStripAnimator('sun_bro_01.png', (0, 0, 80, 80), 9, 1, True, 10)
+        ]
+        self._sprite_animator = self._idle_sprites[0]
+        self._image = self._sprite_animator.next()
+        self._hitbox = HitBox(self, self.x, self.y, 100, 100, False)
 
-    def set_direction(self, direction):
-        self._direction = direction
-        self._sprite_animator.set_direction(direction)
-
-    def set_graphic(self, animator):
-        self._sprite_animator.set_animator(animator)
-
-    def load_png(self, name):
-        # TODO: Move out of this class?
-        """ Load image and return image object """
-        fullname = os.path.join('data', name)
-        try:
-            image = pygame.image.load(fullname)
-            if image.get_alpha() is None:
-                image = image.convert()
-            else:
-                image = image.convert_alpha()
-        except pygame.error as e:
-            print('Cannot load image:', fullname)
-            raise SystemExit(e)
-        return image, image.get_rect()
+    def update(self, delta):
+        self._state.update(self)
+        self._input.update(self)
+        self._image = self._sprite_animator.next()
 
     def handle_input(self, user_input):
         if self._is_moving is False:
             self._is_moving = True
 
-        state = self._player_state.handle_input(self, user_input)
+        state = self._state.handle_input(self, user_input)
         if state:
-            self._player_state = state
-            self._player_state.enter(self)
+            self._state = state
+            self._state.enter(self)
+
+    def set_direction(self, direction):
+        """Sets the direction of the player
+
+        Selects the associated sprite_animator
+
+        :param direction: if direction is None, then select _idle_sprites[0]"""
+        # TODO: Only set direction, move setting the _sprite_animator to .set_graphics()
+        if direction:
+            self._direction = direction
+
+        if not isinstance(self._state, AttackState):
+            if self._direction == Directions.UP:
+                self._sprite_animator = self._move_sprites[0]
+            elif self._direction == Directions.DOWN:
+                self._sprite_animator = self._move_sprites[1]
+            elif self._direction == Directions.LEFT:
+                self._sprite_animator = self._move_sprites[2]
+            elif self._direction == Directions.RIGHT:
+                self._sprite_animator = self._move_sprites[3]
+            else:
+                self._sprite_animator = self._idle_sprites[0]
+
+    def set_graphics(self, animator):
+        if animator == 'attack':
+            self._sprite_animator = self._attack_sprites_2[self._direction]
 
     @property
     def image(self):
-        self._image = self._sprite_animator.current_sprite
         return self._image
 
-    def update(self, delta):
-        # --- State Pattern --- #
-        self._player_state.update(self)
+    def attack(self, attack_type):
+        if attack_type == 'light_attack':
+            self._position_animator = PositionAnimator(self)
+            self._position_animator.is_moving = True
 
-        # --- Component Pattern --- #
-        self._input.update(self)
-        # self._physics.update(self)
-        # self._graphics.update(self)
-
-        self._sprite_animator.animate(delta)
-
-        # Unused for now
-        # self._position_animator.is_moving = self._is_moving
-        # self._position_animator.animate(delta)
-        # self._x += self._directions[self._facing][0] * self._position_animator.positional_delta
-        # self._y += self._directions[self._facing][1] * self._position_animator.positional_delta
-
-        self._image = self._sprite_animator.current_sprite
+            self._x += self._direction.value[0] * self._position_animator.positional_delta
+            self._y += self._direction.value[1] * self._position_animator.positional_delta
 
     def log_input(self):
         self._input.show_replay_data()
+
 

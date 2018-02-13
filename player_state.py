@@ -8,15 +8,15 @@ class PlayerState(metaclass=ABCMeta):
         pass
 
     @abstractmethod
+    def enter(self, actor):
+        raise NotImplementedError
+
+    @abstractmethod
     def handle_input(self, actor, buttons):
         raise NotImplementedError
 
     @abstractmethod
     def update(self, actor):
-        raise NotImplementedError
-
-    @abstractmethod
-    def enter(self, actor):
         raise NotImplementedError
 
 
@@ -24,11 +24,15 @@ class IdleState(PlayerState):
     def __init__(self):
         super().__init__()
 
+    def enter(self, actor):
+        print('> entering ', self)
+        animator = SpriteStripAnimator('hyper_light_drifter.png', (0, 0, 32, 32), 1, 1, True, 10)
+        actor.set_graphics(animator)
+        # actor._hitbox.is_active = False  # TODO: this is in here temporarily
+
     def handle_input(self, actor, buttons):
-        for idx, button in enumerate(buttons):
-            print('> button {} = {}'.format(idx, button))
-        if buttons[5] == 1:  # right bumper
-            return AttackState('light_attack')
+        if buttons[5] == 1:
+            return AttackState(self)
         elif buttons[1] == 1:
             return DodgeState()
         return None
@@ -36,16 +40,13 @@ class IdleState(PlayerState):
     def update(self, actor):
         pass
 
-    def enter(self, actor):
-        animator = SpriteStripAnimator('hyper_light_drifter.png', (0, 0, 32, 32), 1, 1, False, 10)
-        actor.set_graphics(animator)
-
 
 class MovingState(PlayerState):
     def __init__(self):
         super().__init__()
 
     def enter(self, actor):
+        print('> entering ', self)
         animator = SpriteStripAnimator('hyper_light_drifter.png', (0, 0, 32, 32), 12, 1, True, 10)
         actor.set_graphics(animator)
 
@@ -64,35 +65,47 @@ class AttackState(PlayerState):
         self._elapsed_time = 0
 
     def enter(self, actor):
-        actor.set_graphics('attack_sprite.png')
+        print('> entering ', self)
+        actor.set_graphics('attack')
+        actor._hitbox.is_active = True
+        actor._hitbox.update(actor.x + actor._direction.value[0],
+                             actor.y + actor._direction.value[1])
 
     def handle_input(self, actor, buttons):
-        if self._previous_state == DodgeState:
-            # idk, do something?
-            actor.attack('rolling_attack')
+        actor.attack('light_attack')
+        if self._elapsed_time > self._action_duration:
+            # return self._previous_state
+            self.exit(actor)
 
     def update(self, actor):
         self._elapsed_time += 1
-        if self._elapsed_time > self._action_duration:
-            pass
+
+    def exit(self, actor):
+        print('> finished attack.')
+        actor._hitbox.is_active = False
+        actor._state = self._previous_state
 
 
 class DodgeState(PlayerState):
     def __init__(self):
         super().__init__()
-        self._action_duration = 0
+        self._action_duration = 15
         self._elapsed_time = 0
 
     def enter(self, actor):
-        actor.set_graphics()
-        actor.set_hitbox('inactive')
+        print('> entering ', self)
+        actor.set_graphics(SpriteStripAnimator('link_02.png', (0, 0, 32, 32), 10, 1, True, 10))
+        # actor.set_hitbox('inactive')
 
     def handle_input(self, actor, buttons):
+        new_state = IdleState()
         if buttons[5] == 1:
-            return AttackState('rolling_attack')
+            new_state = AttackState(self)
+        if self._elapsed_time > self._action_duration:
+            return new_state
 
     def update(self, actor):
         self._elapsed_time += 1
-        if self._elapsed_time > self._action_duration:
-            actor.set_hitbox('active')
-            self._elapsed_time = 0
+        # if self._elapsed_time > self._action_duration:
+        #     # actor.set_hitbox('active')
+        #     self._elapsed_time = 0

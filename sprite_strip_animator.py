@@ -22,8 +22,7 @@ class SpriteStripAnimator(object):
         the iterator advances to the next image.
         """
         self.filename = filename
-        # sprite_sheet = SpriteSheet(filename)
-        self.images = SpriteSheet(filename).load_strip(rect, count, colorkey) # sprite_sheet.load_strip(rect, count, colorkey)
+        self.images = SpriteSheet(filename).load_strip(rect, count, colorkey)
         self.i = 0
         self.loop = loop
         self.frames = frames
@@ -47,6 +46,14 @@ class SpriteStripAnimator(object):
             self.i += 1
             self.f = self.frames
         return image
+
+    def set_sprite_sheet(self, sprite_sheet):
+        """Sets a new sprite sheet to be animated
+
+        :param sprite_sheet: a SpriteSheet object
+        :return:
+        """
+        self.images = sprite_sheet
 
     def __add__(self, sprite_sheet):
         self.images.extend(sprite_sheet.images)

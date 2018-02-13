@@ -34,7 +34,8 @@ class SpriteAnimator(Animator):
         # NEW
         self._frames = 2
         self._n = 1
-        self._strip_animator = None
+        self._strip_animator = SpriteStripAnimator('hyper_light_drifter.png', (0, 0, 32, 32), 1, 1, True, 10)
+        # moving
         self._strips = [
             SpriteStripAnimator('hyper_light_drifter.png', (0, 0, 32, 32), 12, 1, True, self._frames),
             SpriteStripAnimator('hyper_light_drifter.png', (0, 32, 32, 32), 12, 1, True, self._frames),
@@ -42,9 +43,18 @@ class SpriteAnimator(Animator):
             SpriteStripAnimator('hyper_light_drifter.png', (0, 96, 32, 32), 12, 1, True, self._frames)
         ]
         self._strips[self._n].iter()
+        self._idle_strips = [
+
+        ]
+        self._attack_strips = [
+            SpriteStripAnimator('link_02.png', (0, 0, 32, 32), 10, 1, True, self._frames),
+            SpriteStripAnimator('link_02.png', (0, 32, 32, 32), 10, 1, True, self._frames),
+            SpriteStripAnimator('link_02.png', (0, 64, 32, 32), 10, 1, True, self._frames),
+            SpriteStripAnimator('link_02.png', (0, 96, 32, 32), 10, 1, True, self._frames)
+        ]
 
     def animate(self, delta):
-        self._current_sprite = self._strips[self._n].next()
+        self._current_sprite = self._strip_animator.next()  # self._strips[self._n].next()
 
         # if delta < self._variable_segment_lengths[self._frame_index] and self._elapsed_time < self._variable_segment_lengths[self._frame_index]:
         #     self._elapsed_time += delta

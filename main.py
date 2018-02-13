@@ -18,6 +18,7 @@ try:
     from wall import Wall
     from entity import Entity
     import xbox360_controller
+    from hitbox import HitBox
 except ImportError as e:
     print('Could not load module. {}'.format(e))
     sys.exit(2)
@@ -103,9 +104,36 @@ def evaluate_entity(entity):
         result = RED
     elif isinstance(entity, Wall):
         result = WHITE
+    elif isinstance(entity, HitBox):
+        result = GREEN
     elif entity is None:
         result = WHITE
     return result
+
+
+def draw_sprite(image):
+    image_scaled = scale_image(image, UNIT_SIZE)
+    DISPLAY_SURFACE.blit(image_scaled, (MAP_X_START + world.player.x, MAP_Y_START + world.player.y))
+
+
+def draw_coloured_rect(entity):
+    pygame.draw.rect(
+        DISPLAY_SURFACE,
+        evaluate_entity(entity),
+        (MAP_X_START + entity.x, MAP_Y_START + entity.y, UNIT, UNIT)
+    )
+
+
+def draw_entities(entities):
+    for entity in entities:
+        if entity:
+            draw_coloured_rect(entity)
+
+
+def draw_hitboxes(entities):
+    for entity in entities:
+        if entity and entity._hitbox and entity._hitbox.is_active:
+            draw_coloured_rect(entity._hitbox)
 
 
 def main():
@@ -173,18 +201,11 @@ def main():
         DISPLAY_SURFACE.fill(WINDOW_BACKGROUND_COLOUR)
 
         # Draw as sprites
-        player_image = get_image(0, 0, 76, 76, player_sheet)
-        enemy_image = get_image(0, 0, 80, 80, enemy_sheet)
-        player = scale_image(world.player.image, UNIT_SIZE)
-        DISPLAY_SURFACE.blit(player, (world.player.x, world.player.y))
+        draw_sprite(world.player.image)
 
         # Draw ENTITIES as coloured squares
-        for i in range(len(entities)):
-            e = entities[i]
-            if e is not None:
-                pygame.draw.rect(DISPLAY_SURFACE,
-                                 evaluate_entity(e),
-                                 (MAP_X_START + e.x, MAP_Y_START + e.y, UNIT, UNIT))
+        draw_entities(entities)
+        draw_hitboxes(entities)
 
         # --- End of frame --- #
         # TODO: Decide whether to use custom game loop or pygame loop

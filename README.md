@@ -1,2 +1,2 @@
-### 2D Adventure game ###
-## Using pygame - SDL wrapper ##
+# 2D Adventure game #
+## using pygame - an SDL wrapper ##

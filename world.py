@@ -3,6 +3,10 @@ import math
 from vector import Vector
 from entity import Entity
 from player import Player
+from input_component import InputComponent
+from physics_component import PhysicsComponent
+from graphics_component import GraphicsComponent
+import xbox360_controller
 
 
 class World(object):
@@ -13,6 +17,10 @@ class World(object):
         self._unit = 50
         self._populate_grid()
         self.player = self._get_player()
+
+    def update(self):
+        # TODO: for e in self._entities: e.update(delta) ?
+        pass
 
     def _load(self):
         width = len(self._map)
@@ -63,6 +71,13 @@ class World(object):
     def element_from_char(self, legend, character, vector):
         if character is " ":
             return None
+        elif character is 'p':
+            element = legend[character](vector,
+                                        InputComponent(xbox360_controller.Controller(0)),
+                                        PhysicsComponent(),
+                                        GraphicsComponent())
+            element.origin_char = character
+            return element
         element = legend[character](vector)
         element.origin_char = character
         return element

@@ -55,6 +55,7 @@ class Player(Entity):
     def update(self, delta):
         self._state.update(self)
         self._input.update(self)
+        self._hitbox.update(self)
         self._image = self._sprite_animator.next()
 
     def handle_input(self, user_input):

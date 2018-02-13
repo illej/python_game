@@ -68,8 +68,8 @@ class AttackState(PlayerState):
         print('> entering ', self)
         actor.set_graphics('attack')
         actor._hitbox.is_active = True
-        actor._hitbox.update(actor.x + actor._direction.value[0],
-                             actor.y + actor._direction.value[1])
+        # actor._hitbox.update(actor.x + actor._direction.value[0],
+        #                      actor.y + actor._direction.value[1])
 
     def handle_input(self, actor, buttons):
         actor.attack('light_attack')

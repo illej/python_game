@@ -7,7 +7,7 @@ class Entity(metaclass=ABCMeta):
         self._x = vector.x
         self._y = vector.y
         self._origin_char = None
-        self._hitbox = HitBox(self, self._x, self._y, 50, 50, True)
+        self._hitbox = HitBox(self, self._x, self._y, 50, 50, False)
 
     @property
     def x(self):

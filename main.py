@@ -30,7 +30,7 @@ WINDOW_HEIGHT = 768
 WINDOW_HORIZONTAL_CENTRE = WINDOW_WIDTH / 2
 WINDOW_VERTICAL_CENTRE = WINDOW_HEIGHT / 2
 
-WINDOW_BACKGROUND_COLOUR = (0, 0, 0)  # black
+WINDOW_BACKGROUND_COLOUR = (255, 255, 255)  # (0, 0, 0)  # black
 
 DISPLAY_SURFACE = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), 0, 32)
 pygame.display.set_caption('zelda_souls_v1')
@@ -103,7 +103,7 @@ def evaluate_entity(entity):
     elif isinstance(entity, Critter):
         result = RED
     elif isinstance(entity, Wall):
-        result = WHITE
+        result = BLUE
     elif isinstance(entity, HitBox):
         result = GREEN
     elif entity is None:
@@ -200,11 +200,8 @@ def main():
         # --- RENDER --- #
         DISPLAY_SURFACE.fill(WINDOW_BACKGROUND_COLOUR)
 
-        # Draw as sprites
-        draw_sprite(world.player.image)
-
-        # Draw ENTITIES as coloured squares
         draw_entities(entities)
+        draw_sprite(world.player.image)
         draw_hitboxes(entities)
 
         # --- End of frame --- #

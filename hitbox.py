@@ -7,9 +7,9 @@ class HitBox(object):
         self.height = h
         self._is_active = is_active
 
-    def update(self, x, y):
-        self.x = x
-        self.y = y
+    def update(self, actor):
+        self.x = self.parent.x + (self.parent._direction.value[0] * 50)
+        self.y = self.parent.y + (self.parent._direction.value[1] * 50)
 
     @property
     def is_active(self):

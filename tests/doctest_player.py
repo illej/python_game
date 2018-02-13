@@ -1,5 +1,6 @@
-from player import Player
-from vector import Vector
+from .context import zelda_souls
+from zelda_souls.player import Player
+from zelda_souls.vector import Vector
 
 
 def animate_01():
@@ -43,6 +44,7 @@ def animate_01():
     >>> p.visual_representation
     (0, 255, 0)
     """
+
 
 def animate_02():
     """

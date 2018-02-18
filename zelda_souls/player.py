@@ -31,10 +31,16 @@ class Player(Entity):
         ]
         self._move_sprites = [
             # file, rect, image_count, colour_key, is_looping, frame_duration
+            # HLD
             SpriteStripAnimator('hyper_light_drifter.png', (0, 0, 32, 32), 12, 1, True, 2),
             SpriteStripAnimator('hyper_light_drifter.png', (0, 32, 32, 32), 12, 1, True, 2),
             SpriteStripAnimator('hyper_light_drifter.png', (0, 64, 32, 32), 12, 1, True, 2),
             SpriteStripAnimator('hyper_light_drifter.png', (0, 96, 32, 32), 12, 1, True, 2)
+            # LINK
+            # SpriteStripAnimator('link_no_cap_v04.png', (54, 0, 27, 32), 12, 1, True, 2),
+            # SpriteStripAnimator('link_no_cap_v04.png', (0, 0, 27, 32), 14, 1, True, 2),
+            # SpriteStripAnimator('link_no_cap_v04.png', (0, 0, 33, 32), 14, 1, True, 2),
+            # SpriteStripAnimator('link_no_cap_v04.png', (0, 0, 33, 32), 14, 1, True, 2)
         ]
         self._attack_sprites = [
             SpriteStripAnimator('link_02.png', (0, 0, 80, 80), 10, 1, True, 10)

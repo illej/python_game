@@ -69,6 +69,13 @@ MAP_VERTICAL_CENTRE = MAP_HEIGHT / 2
 MAP_X_START = WINDOW_HORIZONTAL_CENTRE - MAP_HORIZONTAL_CENTRE
 MAP_Y_START = WINDOW_VERTICAL_CENTRE - MAP_VERTICAL_CENTRE
 
+TILE_WIDTH = UNIT_SIZE[0]
+TILE_HEIGHT = UNIT_SIZE[1]
+
+
+def truncate_float(f):
+    return int(f)
+
 
 def scale_image(image, size):
     return pygame.transform.scale(image, (size[0], size[1]))
@@ -196,6 +203,28 @@ def main():
 
         # --- UPDATE --- #
         world.update()
+
+        new_player_x = world.player.x  # + value from xbox_controller
+        new_player_y = world.player.y  # + value from xbox_controller
+
+        player_tile_x = truncate_float((new_player_x - MAP_X_START) / TILE_WIDTH)
+        player_tile_y = truncate_float((new_player_y - MAP_Y_START) / TILE_HEIGHT)
+
+        is_valid = False
+
+        if 0 <= player_tile_x < w and 0 <= player_tile_y < h:
+            tile = grid[player_tile_y][player_tile_x]
+            is_valid = tile is None
+
+        if is_valid:
+            world.player.x = new_player_x
+            world.player.y = new_player_y
+
+        print('> pl_tile_x,y:{},{}, wrld.pl.x,y:{},{}, MP_X,Y_ST:{},{}'.format(
+            player_tile_x, player_tile_y,
+            world.player.x, world.player.y,
+            MAP_X_START, MAP_Y_START
+        ))
 
         # --- RENDER --- #
         DISPLAY_SURFACE.fill(WINDOW_BACKGROUND_COLOUR)

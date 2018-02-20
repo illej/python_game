@@ -19,6 +19,7 @@ try:
     from entity import Entity
     import xbox360_controller
     from hitbox import HitBox
+    from tile_map import TileMap
 except ImportError as e:
     print('Could not load module. {}'.format(e))
     sys.exit(2)
@@ -71,6 +72,19 @@ MAP_Y_START = WINDOW_VERTICAL_CENTRE - MAP_VERTICAL_CENTRE
 
 TILE_WIDTH = UNIT_SIZE[0]
 TILE_HEIGHT = UNIT_SIZE[1]
+
+
+def is_tile_map_point_empty(tile_map, test_x, test_y):
+    is_empty = False
+
+    test_tile_x = truncate_float((test_x - tile_map.upper_left_x) / tile_map.tile_width)
+    test_tile_y = truncate_float((test_y - tile_map.upper_left_y) / tile_map.tile_height)
+
+    if 0 <= test_tile_x < tile_map.count_x and 0 <= test_tile_y < tile_map.count_y:
+        tile = tile_map.tiles[test_tile_y][test_tile_x]  # [test_tile_y * tile_map.count_x + test_tile_x]
+        is_empty = tile is None  # = tile is 0
+
+    return is_empty
 
 
 def truncate_float(f):
@@ -152,6 +166,42 @@ def main():
     entities = world.get_entities()
     print('entities:', entities)
 
+    tiles_00 = [
+        [1, 1, 1, 1,    1, 1, 1, 1,     1, 1, 1, 1,     1, 1, 1, 1,     1],
+        [1, 0, 0, 0,    0, 0, 0, 0,     0, 0, 0, 0,     0, 0, 0, 0,     1],
+        [1, 0, 0, 0,    0, 0, 0, 0,     0, 0, 0, 0,     0, 0, 0, 0,     1],
+        [1, 0, 0, 0,    0, 0, 0, 0,     0, 0, 0, 0,     0, 0, 0, 0,     1],
+        [1, 0, 0, 0,    0, 0, 0, 0,     0, 0, 0, 0,     0, 0, 0, 0,     1],
+        [1, 0, 0, 0,    0, 0, 0, 0,     0, 0, 0, 0,     0, 0, 0, 0,     1],
+        [1, 0, 0, 0,    0, 0, 0, 0,     0, 0, 0, 0,     0, 0, 0, 0,     1],
+        [1, 0, 0, 0,    0, 0, 0, 0,     0, 0, 0, 0,     0, 0, 0, 0,     1],
+        [1, 1, 1, 1,    1, 1, 1, 1,     0, 1, 1, 1,     1, 1, 1, 1,     1]
+    ]
+    tiles_01 = [
+        [1, 1, 1, 1,    1, 1, 1, 1,     0, 1, 1, 1,     1, 1, 1, 1,     1],
+        [1, 0, 0, 0,    0, 0, 0, 0,     0, 0, 0, 0,     0, 0, 0, 0,     1],
+        [1, 0, 0, 0,    0, 0, 0, 0,     0, 0, 0, 0,     0, 0, 0, 0,     1],
+        [1, 0, 0, 0,    0, 0, 0, 0,     0, 0, 0, 0,     0, 0, 0, 0,     1],
+        [1, 0, 0, 0,    0, 0, 0, 0,     0, 0, 0, 0,     0, 0, 0, 0,     1],
+        [1, 0, 0, 0,    0, 0, 0, 0,     0, 0, 0, 0,     0, 0, 0, 0,     1],
+        [1, 0, 0, 0,    0, 0, 0, 0,     0, 0, 0, 0,     0, 0, 0, 0,     1],
+        [1, 0, 0, 0,    0, 0, 0, 0,     0, 0, 0, 0,     0, 0, 0, 0,     1],
+        [1, 1, 1, 1,    1, 1, 1, 1,     1, 1, 1, 1,     1, 1, 1, 1,     1]
+    ]
+
+    tile_map_00 = TileMap(
+        17, 9,
+        -30, 0,
+        60, 60,
+        tiles_00
+    )
+    tile_map_01 = TileMap(
+        17, 9,
+        -30, 0,
+        60, 60,
+        tiles_01
+    )
+
     # --- Draw player as sprite --- # TODO: Result sent to player/enemy constructor
     player_sheet, player_sheet_rect = load_png('sun_bro_01.png')
     enemy_sheet, enemy_sheet_rect = load_png('link_02.png')
@@ -204,27 +254,17 @@ def main():
         # --- UPDATE --- #
         world.update()
 
-        new_player_x = world.player.x  # + value from xbox_controller
-        new_player_y = world.player.y  # + value from xbox_controller
+        player_x = (world.player.width / 2) + world.player.x
+        player_y = world.player.height + world.player.y
 
-        player_tile_x = truncate_float((new_player_x - MAP_X_START) / TILE_WIDTH)
-        player_tile_y = truncate_float((new_player_y - MAP_Y_START) / TILE_HEIGHT)
+        new_player_x = player_x  # + value from xbox_controller
+        new_player_y = player_y  # + value from xbox_controller
 
-        is_valid = False
-
-        if 0 <= player_tile_x < w and 0 <= player_tile_y < h:
-            tile = grid[player_tile_y][player_tile_x]
-            is_valid = tile is None
-
-        if is_valid:
+        if is_tile_map_point_empty(new_player_x, new_player_y) and \
+                is_tile_map_point_empty(0.5 * new_player_x, new_player_y) and \
+                is_tile_map_point_empty(new_player_x, new_player_y):
             world.player.x = new_player_x
             world.player.y = new_player_y
-
-        print('> pl_tile_x,y:{},{}, wrld.pl.x,y:{},{}, MP_X,Y_ST:{},{}'.format(
-            player_tile_x, player_tile_y,
-            world.player.x, world.player.y,
-            MAP_X_START, MAP_Y_START
-        ))
 
         # --- RENDER --- #
         DISPLAY_SURFACE.fill(WINDOW_BACKGROUND_COLOUR)

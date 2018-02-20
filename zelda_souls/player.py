@@ -15,6 +15,8 @@ from hitbox import HitBox
 class Player(Entity):
     def __init__(self, vector, input, physics, graphics):
         super().__init__(vector)
+        self.width = 50
+        self.height = 50
         self._input = input
         self._physics = physics
         self._graphics = graphics

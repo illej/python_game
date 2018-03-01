@@ -20,6 +20,7 @@ try:
     import xbox360_controller
     from hitbox import HitBox
     from tile_map import TileMap
+    from game_state import GameState
 except ImportError as e:
     print('Could not load module. {}'.format(e))
     sys.exit(2)
@@ -75,6 +76,7 @@ TILE_HEIGHT = UNIT_SIZE[1]
 
 
 def is_tile_map_point_empty(tile_map, test_x, test_y):
+    # TODO: move to 'physics_component'
     is_empty = False
 
     test_tile_x = truncate_float((test_x - tile_map.upper_left_x) / tile_map.tile_width)
@@ -82,13 +84,18 @@ def is_tile_map_point_empty(tile_map, test_x, test_y):
 
     if 0 <= test_tile_x < tile_map.count_x and 0 <= test_tile_y < tile_map.count_y:
         tile = tile_map.tiles[test_tile_y][test_tile_x]  # [test_tile_y * tile_map.count_x + test_tile_x]
-        is_empty = tile is None  # = tile is 0
+        print('tile:', tile)
+        is_empty = tile is 0  # = tile is 0
 
     return is_empty
 
 
 def truncate_float(f):
     return int(f)
+
+
+def round_float(f):
+    return int(f + 0.5)
 
 
 def scale_image(image, size):
@@ -158,6 +165,17 @@ def draw_hitboxes(entities):
 
 
 def main():
+    # setup input
+    # TODO: initialise player (as entity) here, then inject into world?
+    gamepads = [xbox360_controller.Controller(i) for i in range(pygame.joystick.get_count())]
+    if len(gamepads) > 0:
+        print('> gamepads: {}, id:{}'.format(gamepads, gamepads[0].get_id()))
+    else:
+        print('> no gamepads connected.')
+
+    GameState.player_x = 150
+    GameState.player_y = 150
+
     # --- WEIRD SETUP THING --- #
     print(world.to_string())
     print('player:', world.player)
@@ -202,10 +220,6 @@ def main():
         tiles_01
     )
 
-    # --- Draw player as sprite --- # TODO: Result sent to player/enemy constructor
-    player_sheet, player_sheet_rect = load_png('sun_bro_01.png')
-    enemy_sheet, enemy_sheet_rect = load_png('link_02.png')
-
     # frame time data
     frame_start_time = time()
 
@@ -235,9 +249,7 @@ def main():
                 pygame.quit()
                 sys.exit()
             elif event.type == KEYDOWN:
-                # TODO: Move to Player?
-                # TODO: Send input data to Player as Commands(stick_data)
-                world.player.handle_input(event.key)
+                # world.player.handle_input(event.key)
                 if event.key == K_UP:
                     world.player.move_up()
                 if event.key == K_DOWN:
@@ -252,24 +264,49 @@ def main():
                     world.player.log_input()
 
         # --- UPDATE --- #
-        world.update()
+        # world.update()
 
-        player_x = (world.player.width / 2) + world.player.x
-        player_y = world.player.height + world.player.y
+        left_x, left_y = gamepads[0].get_left_stick()
 
-        new_player_x = player_x  # + value from xbox_controller
-        new_player_y = player_y  # + value from xbox_controller
+        new_player_x = GameState.player_x + int(left_x * 5)
+        new_player_y = GameState.player_y + int(left_y * 5)
+        print('new_x: {}, new_y: {}'.format(new_player_x, new_player_y))
 
-        if is_tile_map_point_empty(new_player_x, new_player_y) and \
-                is_tile_map_point_empty(0.5 * new_player_x, new_player_y) and \
-                is_tile_map_point_empty(new_player_x, new_player_y):
-            world.player.x = new_player_x
-            world.player.y = new_player_y
+        if is_tile_map_point_empty(tile_map_00, new_player_x, new_player_y):
+            print('is_empty:', True)
+            GameState.player_x = new_player_x
+            GameState.player_y = new_player_y
 
         # --- RENDER --- #
+        upper_left_x = -30
+        upper_left_y = 0
+        tile_width = 60
+        tile_height = 60
+
         DISPLAY_SURFACE.fill(WINDOW_BACKGROUND_COLOUR)
 
-        draw_entities(entities)
+        for y in range(tile_map_00.count_y):
+            for x in range(tile_map_00.count_x):
+                tile = tile_map_00.tiles[y][x]
+                grey = (125, 125, 125)
+                if tile == 1:
+                    grey = (255, 255, 255)
+                min_x = upper_left_x + (x * tile_width)
+                min_y = upper_left_y + (y * tile_height)
+                max_x = tile_width
+                max_y = tile_height
+                pygame.draw.rect(DISPLAY_SURFACE, grey, (min_x, min_y, max_x, max_y))
+        player_colour = (255, 255, 0)
+        player_width = 0.75 * tile_width
+        player_height = tile_height
+        player_left = GameState.player_x - (0.5 * player_width)
+        player_top = GameState.player_y - player_height
+        pygame.draw.rect(DISPLAY_SURFACE,
+                         player_colour,
+                         (player_left, player_top,
+                          player_width, player_height))
+
+        # draw_entities(entities)
         draw_sprite(world.player.image)
         draw_hitboxes(entities)
 

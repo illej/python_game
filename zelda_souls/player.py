@@ -15,8 +15,8 @@ from hitbox import HitBox
 class Player(Entity):
     def __init__(self, vector, input, physics, graphics):
         super().__init__(vector)
-        self.width = 50
-        self.height = 50
+        self.width = 60 * 0.75
+        self.height = 60
         self._input = input
         self._physics = physics
         self._graphics = graphics
@@ -62,7 +62,7 @@ class Player(Entity):
 
     def update(self, delta):
         self._state.update(self)
-        self._input.update(self)
+        # self._input.update(self)
         self._hitbox.update(self)
         self._image = self._sprite_animator.next()
 
